@@ -58,6 +58,7 @@ describe('FastPriorityQueue', function() {
       }
     }
   });
+
   it('RandomArray', function() {
     for (var ti = 0; ti < 100; ti++) {
       var b = new FastPriorityQueue(function(a, b) {
@@ -80,6 +81,7 @@ describe('FastPriorityQueue', function() {
       }
     }
   });
+
   it('RandomArrayEnDe', function() {
     for (var ti = 0; ti < 100; ti++) {
       var b = new FastPriorityQueue(function(a, b) {
@@ -107,6 +109,23 @@ describe('FastPriorityQueue', function() {
         });
       }
     }
+  });
+
+  it('PollOtherValues', function() {
+    var x = new FastPriorityQueue();
+
+    x.heapify([1, 0, 5, 1, 4, 3]);
+
+    // We need to traverse an array in inverse order if we want to remove
+    // elements on it without causing "jumps"
+    for (var i = x.size; --i;) {
+      if (x.peek(i) === 1) x.poll(i);
+    }
+
+    if (x.poll() != 0) throw 'bug0';
+    if (x.poll() != 3) throw 'bug3';
+    if (x.poll() != 4) throw 'bug4';
+    if (x.poll() != 5) throw 'bug5';
   });
 
 });
