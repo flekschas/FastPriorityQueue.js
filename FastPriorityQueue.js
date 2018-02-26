@@ -71,24 +71,6 @@ FastPriorityQueue.prototype.heapify = function (arr) {
 };
 
 // for internal use
-FastPriorityQueue.prototype._percolateUp = function (i) {
-    var myval = this.array[i];
-    var p;
-    var ap;
-    while (i > 0) {
-        p = (i - 1) >> 1;
-        ap = this.array[p];
-        if (!this.compare(myval, ap)) {
-            break;
-        }
-        this.array[i] = ap;
-        i = p;
-    }
-    this.array[i] = myval;
-};
-
-
-// for internal use
 FastPriorityQueue.prototype._percolateDown = function (i) {
     var size = this.size;
     var hsize = this.size >>> 1;
@@ -122,12 +104,14 @@ FastPriorityQueue.prototype._percolateDown = function (i) {
 // the "undefined" value.
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/undefined
 //
-FastPriorityQueue.prototype.peek = function () {
-    if(this.size == 0) return undefined;
-    return this.array[0];
+FastPriorityQueue.prototype.peek = function (i) {
+    i = i | 0;
+    if (this.size == 0 || i >= this.size) return undefined;
+    return this.array[i];
 };
 
-// remove the element on top of the heap (a smallest element)
+// remove the element on top of the heap (a smallest element) or the value
+// at index `i`
 // runs in logarithmic time
 //
 // If the priority queue is empty, the function returns the
@@ -137,13 +121,13 @@ FastPriorityQueue.prototype.peek = function () {
 // For long-running and large priority queues, or priority queues
 // storing large objects, you may  want to call the trim function
 // at strategic times to recover allocated memory.
-FastPriorityQueue.prototype.poll = function () {
-    if (this.size == 0) 
-        return undefined;
-    var ans = this.array[0];
+FastPriorityQueue.prototype.poll = function (i) {
+    i = i | 0;
+    if (this.size == 0 || i >= this.size) return undefined;
+    var ans = this.array[i];
     if (this.size > 1) {
-        this.array[0] = this.array[--this.size];
-        this._percolateDown(0 | 0);
+        this.array[i] = this.array[--this.size];
+        this._percolateDown(i);
     } else {
         this.size -= 1;
     }
@@ -155,8 +139,7 @@ FastPriorityQueue.prototype.poll = function () {
 //  and returning the peek value (like poll). The size of the priority
 // thus remains unchanged.
 FastPriorityQueue.prototype.replaceTop = function (myval) {
-    if (this.size == 0) 
-        return undefined;
+    if (this.size == 0) return undefined;
     var ans = this.array[0];
     this.array[0] = myval;
     this._percolateDown(0 | 0);
@@ -173,25 +156,5 @@ FastPriorityQueue.prototype.trim = function () {
 FastPriorityQueue.prototype.isEmpty = function () {
     return this.size === 0;
 };
-
-// just for illustration purposes
-var main = function () {
-    // main code
-    var x = new FastPriorityQueue(function (a, b) {
-        return a < b;
-    });
-    x.add(1);
-    x.add(0);
-    x.add(5);
-    x.add(4);
-    x.add(3);
-    while (!x.isEmpty()) {
-        console.log(x.poll());
-    }
-};
-
-if (require.main === module) {
-    main();
-}
 
 module.exports = FastPriorityQueue;
